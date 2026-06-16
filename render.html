@@ -1,0 +1,74 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>render</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.4.4/lz-string.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.4.4/base64-string.min.js"></script>
+<script src="replayviewer/js/facepunch.webgame.js"></script>
+<script src="replayviewer/js/sourceutils.js"></script>
+<script src="replayviewer/js/replayviewer.js"></script>
+<link type="text/css" rel="stylesheet" href="replayviewer/styles/mapviewer.css">
+<link type="text/css" rel="stylesheet" href="replayviewer/styles/replayviewer.css">
+<style>
+:root{--primary:#20c997;}
+html,body{margin:0;height:100%;background:#000;overflow:hidden;}
+#view{position:fixed;inset:0;}
+/* the playback bar / scrubber are useless in a render */
+.map-viewer .playback-bar{display:none!important;}
+/* ===== mhud HUD (kept in sync with index.php) ===== */
+.map-viewer .key-display{position:absolute;background:transparent;width:200px;height:108px;left:50%;top:53%;transform:translateX(-50%);font-family:sans-serif;}
+.map-viewer .key-display .stat,.map-viewer .key-display .key{position:absolute;text-align:center;}
+.map-viewer .key-display .stat{background:transparent;height:auto;line-height:1;}
+.map-viewer .key-display .speed-outer{left:0;top:0;width:200px;font-size:0;}
+.map-viewer .key-display .speed-outer .value{font-size:28px;font-weight:700;color:#fff;letter-spacing:.5px;font-variant-numeric:tabular-nums;text-shadow:0 1px 6px rgba(0,0,0,.75);}
+.map-viewer .key-display .sync-outer{display:none;}
+.map-viewer .key-display .key{background:transparent!important;border:0;border-bottom:2px solid #fff;border-radius:0;box-shadow:none!important;color:#fff;font-size:13px;font-weight:800;width:30px;height:26px;line-height:20px;text-shadow:0 1px 4px rgba(0,0,0,.7);opacity:0;transition:opacity .04s;}
+.map-viewer .key-display .key.pressed{opacity:1;}
+.map-viewer .key-display .key-w{left:85px;top:40px;width:30px;height:26px;}
+.map-viewer .key-display .key-a{left:50px;top:70px;width:30px;height:26px;}
+.map-viewer .key-display .key-s{left:85px;top:70px;width:30px;height:26px;}
+.map-viewer .key-display .key-d{left:120px;top:70px;width:30px;height:26px;}
+.map-viewer .key-display .key-walk,.map-viewer .key-display .key-duck,.map-viewer .key-display .key-jump{display:none;}
+</style></head>
+<body>
+<div id="view" class="map-viewer"></div>
+<script>
+(function(){
+    var p = new URLSearchParams(location.search);
+    var map = p.get('map'), file = p.get('file');
+    window.__ready = false; window.__done = false; window.__error = null;
+    var viewer = window.viewer = new Gokz.ReplayViewer(document.getElementById('view'));
+    viewer.mapBaseUrl = 'mapdata/maps';
+    viewer.showDebugPanel = false;
+    viewer.saveTickInHash = false;
+    viewer.showOptions = false;
+    viewer.isPlaying = false;              // hold until __play()
+    viewer.showMessage = function(){};     // suppress in-canvas error text
+    viewer.loadReplay('index.php?rmap=' + encodeURIComponent(map) + '&rfile=' + encodeURIComponent(file));
+    viewer.animate();
+    // The key display is created INSIDE the auto-hiding playback bar; move it out to
+    // #view so it stays visible (and positions relative to the viewport) in renders.
+    var moveIv = setInterval(function(){
+        var kd = document.querySelector('.key-display');
+        if (kd && kd.parentElement !== document.getElementById('view')) {
+            document.getElementById('view').appendChild(kd); clearInterval(moveIv);
+        }
+    }, 80);
+    var t0 = Date.now();
+    var poll = setInterval(function(){
+        if (viewer.replay && viewer.map && viewer.map.isReady()) { window.__ready = true; clearInterval(poll); }
+        else if (Date.now() - t0 > 110000) { window.__error = 'timeout waiting for map/replay'; clearInterval(poll); }
+    }, 100);
+
+    // Play exactly one pass from the start; set window.__done when finished.
+    window.__play = function(){
+        viewer.autoRepeat = false; viewer.tick = 0; viewer.isPlaying = true;
+        var end = viewer.replay.tickCount, s0 = Date.now();
+        var iv = setInterval(function(){
+            if (!viewer.replay || viewer.tick >= end - 2 || (Date.now() - s0) > 25 * 60 * 1000) {
+                clearInterval(iv); viewer.isPlaying = false; window.__done = true;
+            }
+        }, 80);
+        return true;
+    };
+})();
+</script>
+</body></html>

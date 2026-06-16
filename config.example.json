@@ -1,0 +1,10 @@
+{
+  "_comment": "Copy to config.json (or run setup.php / install.bat). config.json is git-ignored.",
+  "steamid32": 0,
+  "alias": "",
+  "avatar_file": "",
+  "csgo_dir": "C:/path/to/Counter-Strike Global Offensive/csgo",
+  "replays_dir": "",
+  "live_db": "",
+  "map_base_url": "mapdata/maps"
+}

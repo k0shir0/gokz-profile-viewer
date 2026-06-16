@@ -1,0 +1,13 @@
+{
+  "name": "gokz-profile-viewer-renderer",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Headless renderer: turns GOKZ replays into mp4 via the web viewer + ffmpeg (NVENC).",
+  "scripts": {
+    "render": "node render.js",
+    "watch": "node watch.js"
+  },
+  "dependencies": {
+    "playwright": "^1.49.0"
+  }
+}

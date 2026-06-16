@@ -1,0 +1,26 @@
+# --- per-user config & personal data (never commit) ---
+/config.json
+/favorites.json
+/avatar.*
+
+# --- generated / cached ---
+/cache/
+/mapdata/
+/renders/
+/replays/
+*.sq3
+*.sq3-wal
+*.sq3-shm
+*.mp4
+*.webm
+
+# --- downloaded tooling / deps (fetched by the installer) ---
+/tools/SourceUtils/
+/node_modules/
+renderer/node_modules/
+renderer/rendered.json
+
+# --- misc ---
+.DS_Store
+Thumbs.db
+/.claude/
