@@ -1,65 +1,135 @@
 # GOKZ Profile Viewer
 
-A self-hosted web profile + replay viewer for a **GOKZ** (CS:GO Kreedz) server. It reads
-your server's GOKZ SQLite database and replay files and gives you:
+A **self-hosted web stats page for your own localhosted GOKZ (CS:GO Kreedz) server.** Point it at
+your server's GOKZ database and replay files and it gives you, in your browser:
 
-- **Maps tab** — your completion stats (per-tier progress, PRO/TP times, run history, search/sort/filter, grid & table views, favorites).
-- **Replays tab** — browse maps that have a recording and **watch the replay in 3D in the browser** (WebGL), with an *mhud*-style speed + key overlay. Filter by which player set the run.
-- **Video rendering** (optional) — export any replay to **mp4** (GPU/NVENC), plus a **watcher** that auto-renders new replays as they appear.
+- **Maps** — your completion stats: per-tier progress, PRO/TP personal bests, run history,
+  search / sort / filter, grid & table views, and favorites.
+- **Replays** — every map that has a recording, played back **in 3D in the browser** (WebGL) with an
+  *mhud*-style speed + keys overlay. Filter by which player set the run.
+- **Video export** *(optional)* — render any replay to an **mp4** (GPU/NVENC) and auto-render new
+  runs as they happen.
 
-Everything personal lives in a git-ignored `config.json`, so the repo is safe to share — each
-user points it at **their own** server.
+Your server stays untouched — the app only **reads** your data, and everything personal lives in a
+git-ignored `config.json`. This repo ships with **no one's stats**; each person sets up their own.
 
 ---
 
-## Requirements
+## 1. Before you start (what you need)
 
-| | Needed for | Install |
+| Requirement | Why | How to get it |
 |---|---|---|
-| **PHP 8+** (with `pdo_sqlite`) | the website | `winget install PHP.PHP` |
-| A local **GOKZ server** install | the data (DB + replays) | your CS:GO dedicated server |
-| **Node.js 18+** | video rendering (optional) | https://nodejs.org |
-| **ffmpeg** (with NVENC ideally) | video rendering (optional) | `winget install Gyan.FFmpeg` |
-| **SourceUtils** | map geometry export | auto-downloaded by `start-renderer.bat` |
+| A **localhosted GOKZ server** | it's the source of your data (the SQLite DB + `.replay` files) | you already run this — a CS:GO dedicated server with the GOKZ plugins |
+| **PHP 8+** with the `pdo_sqlite` extension | runs the website + reads the DB | `winget install PHP.PHP` (Windows) |
+| Your **SteamID** | tells the app whose stats to show | any format works — see step 4 |
+| *(optional)* **Node.js 18+** and **ffmpeg** | only for the video renderer | `winget install OpenJS.NodeJS` and `winget install Gyan.FFmpeg` |
 
-## Quick start
+> The GOKZ server does **not** need to be running while you browse — only its files need to exist.
+> By default they live under `…/csgo/addons/sourcemod/data/` (the `gokz-replays/_runs` folder and
+> the `sqlite/gokz-sqlite.sq3` database). The setup wizard finds them for you.
 
-1. Install PHP (above). Clone this repo.
-2. Run **`install.bat`** — it checks your dependencies, starts the server, and opens the
-   **setup wizard** in your browser.
-3. In setup: enter your **SteamID**, optionally upload an **avatar**, and point it at your
-   **CS:GO `csgo` folder**. It auto-finds the GOKZ replays + database underneath. Save.
-4. Your profile opens at `http://localhost:8000/`.
+---
 
-## Watching replays in 3D
+## 2. Get the code
 
-The viewer needs each map's geometry exported once (from its `.bsp`):
+```sh
+git clone https://github.com/<your-name>/gokz-profile-viewer.git
+cd gokz-profile-viewer
+```
+(or download the ZIP from GitHub and extract it).
 
-- It exports **on demand** the first time you open a replay (via SourceUtils, into `mapdata/`), or
-- run `tools\export-maps.bat` to batch-export.
+## 3. Install PHP (if you don't have it)
 
-Only maps whose `.bsp` is present in `csgo\maps` can be exported.
+```sh
+winget install PHP.PHP
+```
+Close and reopen your terminal afterwards so `php` is on your PATH. (`pdo_sqlite` ships enabled with
+the winget build; if you use another PHP, make sure `extension=pdo_sqlite` is on in `php.ini`.)
 
-## Video rendering (optional)
+## 4. Run the installer
 
-Run **`start-renderer.bat`**. On first run it installs the renderer dependencies (Playwright +
+Double-click **`install.bat`**. It will:
+
+1. Check your dependencies (PHP + `pdo_sqlite` are required; Node + ffmpeg are reported as optional).
+2. Start the local web server on `http://localhost:8000`.
+3. Open the **setup wizard** in your browser (because there's no `config.json` yet).
+
+In the wizard, fill in:
+
+- **SteamID** — paste it in any form: `STEAM_0:1:651697270`, a 17-digit SteamID64
+  (`7656119…`), or a 32-bit account id. (Find yours at e.g. *steamid.io*, or type `status` in your
+  server console.) The app converts it automatically.
+- **Display name** — optional; leave blank to use the alias stored in the GOKZ DB.
+- **Avatar** — optional image upload.
+- **CS:GO `csgo` folder** — the folder that contains `addons/` and `maps/`, e.g.
+  `D:/SteamLibrary/steamapps/common/Counter-Strike Global Offensive/csgo`. The replays folder and the
+  GOKZ database are auto-detected underneath it (you can override them if your layout is custom).
+
+Click **Save & continue** → your profile loads at `http://localhost:8000/`.
+
+From now on, just run **`start.bat`** (or `install.bat`) to launch it.
+
+---
+
+## 5. Watching replays in 3D
+
+Open the **Replays** tab, find a map with a ▶ button, and click it. Each map's 3D geometry has to be
+exported once from its `.bsp`:
+
+- It exports **automatically** the first time you open a replay for that map, **or**
+- run `tools\export-maps.bat` to batch-export all available maps.
+
+Only maps whose `.bsp` exists in `csgo\maps` can be exported (download the workshop maps you want on
+your server first). Map export uses **SourceUtils**, which the renderer setup downloads for you; if
+you only use the web viewer it's fetched on first use as well.
+
+## 6. Video export (optional)
+
+Run **`start-renderer.bat`**. The first run installs the renderer dependencies (Playwright + a headless
 Chromium) and SourceUtils, then:
 
-- **baselines** the existing replays (won't render your whole back-catalogue), and
-- **auto-renders new replays** to `renders\*.mp4` as they appear (with the mhud HUD, GPU-encoded).
+- **baselines** your existing replays (so it won't render your whole back-catalogue), and
+- **auto-renders new replays** to the `renders\` folder as they appear — with the mhud HUD, encoded on
+  your GPU via ffmpeg/NVENC.
 
-Options (set before running, or in the bat): `PLAYERS=<steamid32>` to render only one player's
-replays, `RENDER_EXISTING=1` to backfill everything, `POLL=<seconds>`.
+Tweak it with environment variables (set before running, or edit the `.bat`):
 
-## How your data is kept safe
+| Variable | Effect |
+|---|---|
+| `PLAYERS=<steamid32>` | only render that player's replays (comma-separated for several) |
+| `RENDER_EXISTING=1` | also render everything already present (full backfill — slow) |
+| `POLL=15` | how often (seconds) to check for new replays (default 30) |
+
+You can also render a single replay by hand: `cd renderer && node render.js <map> <file>.replay`.
+
+---
+
+## Updating
+
+```sh
+git pull
+```
+Your `config.json`, exported maps, caches and renders are git-ignored, so updates never touch them.
+
+## Troubleshooting
+
+- **It keeps opening the setup page** → `config.json` is missing or has a blank `csgo_dir`. Re-run setup.
+- **"Database not found" / no stats** → the `csgo` path is wrong, or the GOKZ SQLite DB isn't there
+  yet. Confirm `…/csgo/addons/sourcemod/data/sqlite/gokz-sqlite.sq3` exists.
+- **Replay opens but the map is blank** → that map isn't exported yet (run `tools\export-maps.bat`),
+  or its `.bsp` isn't in `csgo\maps`.
+- **`php` not recognized** → reopen your terminal after installing PHP so PATH refreshes.
+- **Renderer can't find ffmpeg** → install it (`winget install Gyan.FFmpeg`) and reopen the terminal.
+
+## How your data stays private
 
 - The GOKZ database is **never modified** — it's copied (with its WAL) into `cache/` and read there.
-- Replay files are streamed read-only through PHP.
-- `config.json`, the DB copies, exported maps, rendered videos, and your avatar are all
-  **git-ignored**.
+- Replay files are streamed **read-only** through PHP.
+- `config.json`, the DB copies, exported maps, rendered videos and your avatar are all **git-ignored**,
+  so nothing personal ends up in the repo.
 
 ## Credits
 
 Built around [GameChaos/GlobalReplays](https://github.com/GameChaos/GlobalReplays) (a fork of
 [Metapyziks/GOKZReplayViewer](https://github.com/Metapyziks/GOKZReplayViewer)) and
-[Metapyziks/SourceUtils](https://github.com/Metapyziks/SourceUtils). See `LICENSE`.
+[Metapyziks/SourceUtils](https://github.com/Metapyziks/SourceUtils). MIT licensed — see `LICENSE`.
