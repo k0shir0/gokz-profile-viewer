@@ -33,7 +33,7 @@ git-ignored `config.json`. This repo ships with **no one's stats**; each person 
 ## 2. Get the code
 
 ```sh
-git clone https://github.com/<your-name>/gokz-profile-viewer.git
+git clone https://github.com/k0shir0/gokz-profile-viewer.git
 cd gokz-profile-viewer
 ```
 (or download the ZIP from GitHub and extract it).
@@ -102,15 +102,6 @@ Tweak it with environment variables (set before running, or edit the `.bat`):
 
 You can also render a single replay by hand: `cd renderer && node render.js <map> <file>.replay`.
 
----
-
-## Updating
-
-```sh
-git pull
-```
-Your `config.json`, exported maps, caches and renders are git-ignored, so updates never touch them.
-
 ## Troubleshooting
 
 - **It keeps opening the setup page** → `config.json` is missing or has a blank `csgo_dir`. Re-run setup.
@@ -121,15 +112,7 @@ Your `config.json`, exported maps, caches and renders are git-ignored, so update
 - **`php` not recognized** → reopen your terminal after installing PHP so PATH refreshes.
 - **Renderer can't find ffmpeg** → install it (`winget install Gyan.FFmpeg`) and reopen the terminal.
 
-## How your data stays private
-
-- The GOKZ database is **never modified** — it's copied (with its WAL) into `cache/` and read there.
-- Replay files are streamed **read-only** through PHP.
-- `config.json`, the DB copies, exported maps, rendered videos and your avatar are all **git-ignored**,
-  so nothing personal ends up in the repo.
-
 ## Credits
-
 Built around [GameChaos/GlobalReplays](https://github.com/GameChaos/GlobalReplays) (a fork of
 [Metapyziks/GOKZReplayViewer](https://github.com/Metapyziks/GOKZReplayViewer)) and
 [Metapyziks/SourceUtils](https://github.com/Metapyziks/SourceUtils). MIT licensed — see `LICENSE`.
