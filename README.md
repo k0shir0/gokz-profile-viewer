@@ -102,6 +102,12 @@ Tweak it with environment variables (set before running, or edit the `.bat`):
 
 You can also render a single replay by hand: `cd renderer && node render.js <map> <file>.replay`.
 
+## 7. Gallary
+<img width="1914" height="951" alt="Screenshot 2026-06-26 101023" src="https://github.com/user-attachments/assets/3e86d7f0-71e6-4417-8135-d41a7cb43f85" />
+
+
+
+
 ## Troubleshooting
 
 - **It keeps opening the setup page** → `config.json` is missing or has a blank `csgo_dir`. Re-run setup.
