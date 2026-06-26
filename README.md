@@ -103,8 +103,11 @@ Tweak it with environment variables (set before running, or edit the `.bat`):
 You can also render a single replay by hand: `cd renderer && node render.js <map> <file>.replay`.
 
 ## 7. Gallary
-<img width="1914" height="951" alt="Screenshot 2026-06-26 101023" src="https://github.com/user-attachments/assets/3e86d7f0-71e6-4417-8135-d41a7cb43f85" />
 
+
+**Main Page** <img width="1860" height="950" alt="image" src="https://github.com/user-attachments/assets/8ea99336-06de-4442-9112-2b88ed47111c" />
+
+**Replay Viewer** <img width="1873" height="943" alt="image" src="https://github.com/user-attachments/assets/e03d3d10-095d-4ec3-a6e3-42cb7b8d481f" />
 
 
 
