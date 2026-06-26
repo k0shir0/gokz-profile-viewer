@@ -105,9 +105,14 @@ You can also render a single replay by hand: `cd renderer && node render.js <map
 ## 7. Gallary
 
 
-**Main Page** <img width="1860" height="950" alt="image" src="https://github.com/user-attachments/assets/8ea99336-06de-4442-9112-2b88ed47111c" />
+**Main Page**:
+<img width="1860" height="950" alt="image" src="https://github.com/user-attachments/assets/8ea99336-06de-4442-9112-2b88ed47111c" />
 
-**Replay Viewer** <img width="1873" height="943" alt="image" src="https://github.com/user-attachments/assets/e03d3d10-095d-4ec3-a6e3-42cb7b8d481f" />
+**Replay Viewer**: 
+
+<img width="1873" height="943" alt="image" src="https://github.com/user-attachments/assets/e03d3d10-095d-4ec3-a6e3-42cb7b8d481f" />
+
+<img width="1909" height="960" alt="image" src="https://github.com/user-attachments/assets/d92b0af5-ea1a-4622-a57b-c3c1a50d2400" />
 
 
 
